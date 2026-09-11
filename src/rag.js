@@ -1,16 +1,9 @@
 import "dotenv/config";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 
-// ========================================
-// RAG FUNCTION
-// ========================================
 
 export async function rag(question) {
-
-  // ========================================
-  // 1. Embedding Question
-  // ========================================
-
+  
   const embeddingResponse = await fetch(
     "http://localhost:20128/v1/embeddings",
     {
@@ -38,11 +31,6 @@ export async function rag(question) {
 
   const queryVector = embeddingData.data[0].embedding;
 
-
-  // ========================================
-  // 2. Connect Astra
-  // ========================================
-
   const client = new DataAPIClient(
     process.env.ASTRA_DB_TOKEN
   );
@@ -52,11 +40,6 @@ export async function rag(question) {
   );
 
   const collection = db.collection("ht_document");
-
-
-  // ========================================
-  // 3. Vector Search
-  // ========================================
 
   const cursor = collection.find(
     {},
@@ -74,11 +57,6 @@ export async function rag(question) {
 
   const results = await cursor.toArray();
 
-
-  // ========================================
-  // 4. Ambil Context
-  // ========================================
-
   if (results.length === 0) {
     return "Informasi tersebut tidak ditemukan dalam dokumen.";
   }
@@ -86,11 +64,6 @@ export async function rag(question) {
   const context = results
     .map((result) => result.content)
     .join("\n\n");
-
-
-  // ========================================
-  // 5. Buat Prompt RAG
-  // ========================================
 
   const prompt = `
 Kamu adalah AI assistant untuk menjawab pertanyaan berdasarkan dokumen perusahaan.
@@ -107,11 +80,6 @@ ${question}
 
 Jawab dengan singkat dan jelas dalam bahasa Indonesia.
 `;
-
-
-  // ========================================
-  // 6. Kirim ke Gemini melalui 9Router
-  // ========================================
 
   const chatResponse = await fetch(
     "http://localhost:20128/v1/chat/completions",
@@ -146,11 +114,6 @@ Jawab dengan singkat dan jelas dalam bahasa Indonesia.
       `Gemini gagal: ${JSON.stringify(chatData)}`
     );
   }
-
-
-  // ========================================
-  // 7. Return Answer
-  // ========================================
 
   return chatData.choices[0].message.content;
 }

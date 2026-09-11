@@ -8,7 +8,6 @@ const collection = db.collection("ht_document");
 
 const text = "Docker digunakan untuk menjalankan aplikasi dalam container.";
 
-// 1. Generate embedding lewat 9Router
 const response = await fetch("http://localhost:20128/v1/embeddings", {
   method: "POST",
   headers: {
@@ -32,7 +31,6 @@ const vector = data.data[0].embedding;
 
 console.log("Embedding dimension:", vector.length);
 
-// 2. Simpan document + vector ke Astra
 const result = await collection.insertOne({
   title: "Docker",
   content: text,

@@ -6,11 +6,6 @@ const question = "Berapa karyawan yang bekerja di IT?";
 console.log("Question:");
 console.log(question);
 
-
-// ========================================
-// 1. Generate SQL
-// ========================================
-
 let sql;
 
 try {
@@ -24,11 +19,6 @@ try {
 console.log("\n=== GENERATED SQL ===");
 console.log(sql);
 
-
-// ========================================
-// 2. Validate SQL (read-only check)
-// ========================================
-
 const isReadOnly = sql.trim().toUpperCase().startsWith("SELECT");
 
 if (!isReadOnly) {
@@ -37,11 +27,6 @@ if (!isReadOnly) {
 }
 
 console.log("\nValidation PASSED: SQL is read-only.");
-
-
-// ========================================
-// 3. Execute Query
-// ========================================
 
 let rows;
 

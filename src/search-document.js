@@ -1,20 +1,10 @@
 import "dotenv/config";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 
-
-// ========================================
-// 1. Pertanyaan user
-// ========================================
-
 const question = "Berapa jam kerja karyawan?";
 
 console.log("Pertanyaan:");
 console.log(question);
-
-
-// ========================================
-// 2. Buat embedding pertanyaan
-// ========================================
 
 const response = await fetch(
   "http://localhost:20128/v1/embeddings",
@@ -49,11 +39,6 @@ const queryVector = data.data[0].embedding;
 console.log("\nQuery vector dimension:");
 console.log(queryVector.length);
 
-
-// ========================================
-// 3. Connect Astra
-// ========================================
-
 const client = new DataAPIClient(
   process.env.ASTRA_DB_TOKEN
 );
@@ -65,11 +50,6 @@ const db = client.db(
 const collection = db.collection("ht_document");
 
 console.log("\nAstra DB connected");
-
-
-// ========================================
-// 4. Vector Search
-// ========================================
 
 const cursor = collection.find(
   {},
@@ -87,11 +67,6 @@ const cursor = collection.find(
 
 
 const results = await cursor.toArray();
-
-
-// ========================================
-// 5. Tampilkan hasil
-// ========================================
 
 console.log("\n=== SEARCH RESULTS ===");
 

@@ -4,10 +4,6 @@ import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 import { splitText } from "./chunk-text.js";
 
-// ========================================
-// 1. Read PDF
-// ========================================
-
 const filePath = "./documents/Employee_Handbook.pdf";
 
 const fileData = new Uint8Array(
@@ -34,19 +30,9 @@ for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
 console.log("PDF berhasil dibaca");
 console.log("Jumlah karakter:", text.length);
 
-
-// ========================================
-// 2. Split Text
-// ========================================
-
 const chunks = splitText(text, 1000, 200);
 
 console.log("Jumlah chunks:", chunks.length);
-
-
-// ========================================
-// 3. Connect Astra
-// ========================================
 
 const client = new DataAPIClient(
   process.env.ASTRA_DB_TOKEN
@@ -60,21 +46,11 @@ const collection = db.collection("ht_document");
 
 console.log("Astra DB connected");
 
-
-// ========================================
-// 4. Process setiap chunk
-// ========================================
-
 for (let i = 0; i < chunks.length; i++) {
 
   const chunk = chunks[i];
 
   console.log(`\nProcessing chunk ${i + 1}...`);
-
-
-  // ------------------------------------
-  // Create embedding
-  // ------------------------------------
 
   const response = await fetch(
     "http://localhost:20128/v1/embeddings",
@@ -111,11 +87,6 @@ for (let i = 0; i < chunks.length; i++) {
     "Vector dimension:",
     vector.length
   );
-
-
-  // ------------------------------------
-  // Store ke Astra
-  // ------------------------------------
 
   const result = await collection.insertOne({
 
